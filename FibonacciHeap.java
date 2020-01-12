@@ -8,7 +8,7 @@ public class FibonacciHeap {
 	private static final double phi = 1.62;
 
 	private HeapNode minimum = null;
-	private HeapNode firstRoot = null;
+	public HeapNode firstRoot = null;
 	private int HeapSize = 0;
 
 	private static int linkActions = 0;
@@ -52,23 +52,7 @@ public class FibonacciHeap {
 		}
 		HeapSize++;
 		numOfTrees++;
-		return node;
-	}
-
-	public void insert(HeapNode node) { // special insert for the KMin method
-		if (firstRoot == null) {
-			firstRoot = node;
-			minimum = node;
-		} else {
-			if (node.key < minimum.key) {
-				minimum = node;
-			}
-			firstRoot.addSibling(node);
-			firstRoot = node;
-		}
-		HeapSize++;
-		numOfTrees++;
-
+		return node; // should be replaced by student code
 	}
 
 	/**
@@ -89,7 +73,8 @@ public class FibonacciHeap {
 		if (minChild == null) { // min got no childs but for sure have siblings because of first if
 			prevTomin.next = nextTomin;
 			nextTomin.prev = prevTomin;
-		} else if (prevTomin == minNode) { // Min is the only root in the heap but for sure got childs
+		}
+		else if (prevTomin == minNode) { // Min is the only root in the heap but for sure got childs
 			this.firstRoot = minNode.child;
 			minChild.setParent(null);
 			HeapNode currNode = minChild.next;
@@ -97,7 +82,8 @@ public class FibonacciHeap {
 				currNode.setParent(null);
 				currNode = currNode.next;
 			}
-		} else { // min got childs and siblings
+		}
+		else { // min got childs and siblings
 			prevTomin.next = minChild;
 			minChild.setParent(null);
 			HeapNode currNode = minChild.next;
@@ -186,16 +172,19 @@ public class FibonacciHeap {
 	 *
 	 */
 	public HeapNode findMin() {
-		return minimum;
+		return minimum;// should be replaced by student code
 	}
 
 	public HeapNode locateMin() {
-		HeapNode current = firstRoot.getnext();
-		HeapNode min = firstRoot;
-		while (!current.equals(firstRoot)) {
+		HeapNode first = firstRoot;
+		HeapNode current = firstRoot;
+		HeapNode min = current;
+		while (!current.next.equals(first)) {
+			current = current.next;
 			if (min.getKey() < current.getKey()) {
 				min = current;
 			}
+			current = current.getnext();
 		}
 		return min;
 	}
@@ -371,29 +360,8 @@ public class FibonacciHeap {
 	 * function should run in O(k(logk + deg(H)).
 	 */
 	public static int[] kMin(FibonacciHeap H, int k) {
-		int[] arr = new int[k];
-		FibonacciHeap kFibo = new FibonacciHeap();
-		HeapNode hMin = H.findMin();
-		KNode minNode = H.new KNode(hMin);
-		kFibo.insert(minNode);
-		for (int i = 0; i < arr.length; i++) { // running k times inserting the Min node from the new fibo tree to the
-												// arr
-			minNode = (KNode) kFibo.findMin();
-			kFibo.enterSons(minNode);
-			arr[i] = minNode.getKey();
-			kFibo.deleteMin();
-
-		}
+		int[] arr = new int[42];
 		return arr; // should be replaced by student code
-	}
-
-	public void enterSons(KNode x) {
-		HeapNode currChild = x.child;
-		this.insert(currChild);
-		currChild = currChild.next;
-		while (currChild != x.child) {
-			this.insert(currChild);
-		}
 	}
 
 	/**
@@ -406,13 +374,13 @@ public class FibonacciHeap {
 	public class HeapNode {
 
 		public int key;
-		protected HeapNode parent = null;
-		protected HeapNode child = null;
-		protected HeapNode prev = this;
-		protected HeapNode next = this;
+		private HeapNode parent = null;
+		private HeapNode child = null;
+		private HeapNode prev = this;
+		private HeapNode next = this;
 
-		protected int rank = 0;
-		protected boolean mark = false;
+		private int rank = 0;
+		private boolean mark = false;
 
 		public HeapNode(int key) {
 			this.key = key;
@@ -595,11 +563,12 @@ public class FibonacciHeap {
 		// other funcs
 		public void printlevel() {
 			HeapNode current = this;
-			System.out.println(current);
+			System.out.print(current);
 			while (!current.next.equals(this)) {
 				current = current.next;
-				System.out.println("->" + current);
+				System.out.print("->" + current);
 			}
+			System.out.print("\n");
 		}
 
 		@Override
@@ -618,7 +587,11 @@ public class FibonacciHeap {
 				return false;
 			return true;
 		}
-
+		
+		public boolean isNotEq(HeapNode other) {
+			return key!=other.getKey();
+		}
+		
 		protected HeapNode findMinSibling() {
 			HeapNode current = getnext();
 			HeapNode min = this;
@@ -629,19 +602,5 @@ public class FibonacciHeap {
 			}
 			return min;
 		}
-	}
-
-	public class KNode extends HeapNode {
-		public HeapNode originNode;
-
-		public KNode(HeapNode x) {
-			super(x.key);
-			this.originNode = x;
-			this.child = x.child;
-			this.prev = x.prev;
-			this.next = x.next;
-
-		}
-
 	}
 }
