@@ -381,7 +381,7 @@ public class FibonacciHeap {
 			minNode = (KNode) kFibo.findMin();
 			kFibo.enterSons(minNode);
 			arr[i] = minNode.getKey();
-			kFibo.deleteMin();
+			kFibo.deleteMin();// jygj
 
 		}
 		return arr; // should be replaced by student code
